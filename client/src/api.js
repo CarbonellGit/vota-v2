@@ -64,13 +64,18 @@ export async function fetchCandidates() {
 }
 
 export async function castVote(candidateId) {
+  const isDev = import.meta.env.DEV;
   const res = await fetch(`${API_BASE}/vote`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      ...(isDev ? { 'X-Dev-Multi-Vote': 'true' } : {}),
       ...authHeader()
     },
-    body: JSON.stringify({ candidateId })
+    body: JSON.stringify({
+      candidateId,
+      ...(isDev ? { isDevMultiVote: true } : {})
+    })
   });
   if (res.status === 401) {
     handleUnauthorized();

@@ -103,6 +103,14 @@ export default function VotingPage({
           </div>
         )}
 
+        {/* Banner de Simulação de Dev para Teste de Empates */}
+        {import.meta.env.DEV && (
+          <div className="mt-4 sm:mt-5 max-w-lg mx-auto p-3 sm:p-3.5 rounded-2xl bg-[#f7b53b]/15 border border-[#f7b53b]/40 flex items-center justify-center gap-2 text-[#1e2a4d] text-xs sm:text-sm font-bold shadow-xs">
+            <Sparkles className="w-4 h-4 text-[#f7b53b] shrink-0" />
+            <span>Modo Teste Dev Ativo: você pode votar em múltiplos colegas para simular empates!</span>
+          </div>
+        )}
+
         {/* User's current vote indicator banner */}
         {user && votedCandidate && (
           <div className="mt-4 sm:mt-5 max-w-lg mx-auto p-3 sm:p-3.5 rounded-2xl bg-amber-50/90 border border-[#f7b53b] flex items-center justify-between gap-3 text-[#1e2a4d] text-xs sm:text-sm shadow-sm">

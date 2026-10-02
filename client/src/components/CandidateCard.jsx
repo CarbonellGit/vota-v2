@@ -11,6 +11,7 @@ export default function CandidateCard({
   const isSelf = currentUser && candidate.email && 
     currentUser.email.toLowerCase().trim() === candidate.email.toLowerCase().trim();
   
+  const isDev = import.meta.env.DEV;
   const isVotedForThis = currentVoteId === candidate.id;
   const hasVotedElsewhere = currentVoteId && !isVotedForThis;
   const isOpen = votingStatus === 'open';
@@ -28,7 +29,7 @@ export default function CandidateCard({
         {isVotedForThis && (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#f7b53b] text-[#1e2a4d] font-black text-[11px] sm:text-xs uppercase tracking-wide shadow-sm">
             <CheckCircle2 className="w-3.5 h-3.5 text-[#1e2a4d]" />
-            Seu Voto Atual
+            {isDev ? 'Votado (Dev)' : 'Seu Voto Atual'}
           </span>
         )}
 
@@ -84,7 +85,7 @@ export default function CandidateCard({
             >
               {votingStatus === 'closed' ? 'Votação Encerrada' : 'Aguardando Abertura'}
             </button>
-          ) : isVotedForThis ? (
+          ) : isVotedForThis && !isDev ? (
             <div className="w-full py-2.5 px-3 rounded-xl bg-amber-50 border border-[#f7b53b] text-[#1e2a4d] text-xs sm:text-sm font-bold text-center flex items-center justify-center gap-1.5 shadow-xs min-h-[44px]">
               <CheckCircle2 className="w-4 h-4 text-[#f7b53b]" />
               Traje Votado
@@ -93,12 +94,19 @@ export default function CandidateCard({
             <button
               onClick={() => onSelectVote(candidate)}
               className={`w-full py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px] ${
-                hasVotedElsewhere
+                isDev && isVotedForThis
+                  ? 'bg-[#f7b53b] hover:bg-[#e6a52a] text-[#1e2a4d]'
+                  : hasVotedElsewhere && !isDev
                   ? 'bg-white hover:bg-slate-50 text-[#2b3a6c] border-2 border-[#2b3a6c] hover:border-[#1e2a4d]'
                   : 'bg-[#2b3a6c] hover:bg-[#1e2a4d] text-white hover:scale-102'
               }`}
             >
-              {hasVotedElsewhere ? (
+              {isDev ? (
+                <>
+                  <Sparkles className="w-3.5 h-3.5 text-[#1e2a4d] shrink-0" />
+                  <span>Votar {isVotedForThis ? 'Novamente (+1)' : '(+1 Dev)'}</span>
+                </>
+              ) : hasVotedElsewhere ? (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 shrink-0" />
                   <span className="sm:hidden">Trocar Voto</span>

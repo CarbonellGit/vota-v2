@@ -85,8 +85,14 @@ router.get('/status', async (req, res) => {
  * POST /api/vote
  * Cast or update a vote with atomic resilience
  */
-router.post('/', authMiddleware, submitVoteLimiter, async (req, res) => {
-  const { candidateId } = req.body;
+router.post('/', authMiddleware, (req, res, next) => {
+  // Em desenvolvimento, isenta o rate limiter para testes rápidos de múltiplos votos
+  if (process.env.NODE_ENV !== 'production' && (req.body?.isDevMultiVote || req.headers['x-dev-multi-vote'] === 'true')) {
+    return next();
+  }
+  return submitVoteLimiter(req, res, next);
+}, async (req, res) => {
+  const { candidateId, isDevMultiVote } = req.body;
   if (!candidateId) {
     return res.status(400).json({ error: 'Candidato não informado' });
   }
@@ -99,15 +105,24 @@ router.post('/', authMiddleware, submitVoteLimiter, async (req, res) => {
     }
 
     const voterEmail = req.user.email.toLowerCase().trim();
+    const devMultiVote = process.env.NODE_ENV !== 'production' && (
+      isDevMultiVote === true || req.headers['x-dev-multi-vote'] === 'true'
+    );
+
     const result = await castVoteAtomic({
       voterEmail,
       candidateId,
-      voterName: req.user.name
+      voterName: req.user.name,
+      devMultiVote
     });
+
+    const msg = devMultiVote
+      ? `Voto de teste computado para ${candidate.name}! (Simulação de empate)`
+      : (result.isUpdate ? 'Seu voto foi atualizado com sucesso!' : 'Voto registrado com sucesso!');
 
     return res.json({
       success: true,
-      message: result.isUpdate ? 'Seu voto foi atualizado com sucesso!' : 'Voto registrado com sucesso!',
+      message: msg,
       candidate: {
         id: candidate.id,
         name: candidate.name

@@ -9,6 +9,7 @@ export default function VoteModal({
   isSubmitting
 }) {
   if (!candidate) return null;
+  const isDev = import.meta.env.DEV;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
@@ -28,13 +29,15 @@ export default function VoteModal({
         {/* Title */}
         <div className="text-center mb-5 mt-2">
           <div className="inline-flex p-3 rounded-2xl bg-[#2b3a6c]/10 text-[#2b3a6c] mb-3 border border-[#2b3a6c]/20">
-            {isChangingVote ? <RefreshCw className="w-6 h-6" /> : <Check className="w-6 h-6" />}
+            {isDev ? <Sparkles className="w-6 h-6 text-[#f7b53b]" /> : isChangingVote ? <RefreshCw className="w-6 h-6" /> : <Check className="w-6 h-6" />}
           </div>
           <h3 className="text-xl font-extrabold text-[#1e2a4d]">
-            {isChangingVote ? 'Alterar seu Voto' : 'Confirmar Voto'}
+            {isDev ? 'Voto de Teste (Simulação)' : isChangingVote ? 'Alterar seu Voto' : 'Confirmar Voto'}
           </h3>
           <p className="text-xs text-slate-600 mt-1">
-            {isChangingVote
+            {isDev
+              ? 'Modo Dev: Este voto será somado aos votos do participante para simular empates.'
+              : isChangingVote
               ? 'Você já havia votado antes. Deseja transferir seu voto?'
               : 'Você tem direito a 1 voto para o Melhor Traje da festa.'}
           </p>
@@ -68,7 +71,9 @@ export default function VoteModal({
         <div className="flex items-start gap-2 text-xs text-amber-900 bg-amber-50 border border-amber-200 p-3 rounded-xl mb-6">
           <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
           <span>
-            {isChangingVote 
+            {isDev
+              ? 'Você pode votar em quantos candidatos quiser para testar empates no pódio (1º, 2º e 3º lugares).'
+              : isChangingVote 
               ? 'Ao confirmar, seu voto anterior será substituído e passará a valer para este colega.'
               : 'Se mudar de ideia mais tarde, você poderá alterar seu voto enquanto a votação estiver aberta.'}
           </span>
@@ -93,7 +98,7 @@ export default function VoteModal({
             {isSubmitting ? (
               <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
             ) : (
-              isChangingVote ? 'Transferir Voto' : 'Confirmar Voto'
+              isDev ? 'Confirmar Voto (+1 Dev)' : isChangingVote ? 'Transferir Voto' : 'Confirmar Voto'
             )}
           </button>
         </div>

@@ -221,9 +221,15 @@ async function getVoteByEmail(email) {
   return null;
 }
 
-async function castVoteAtomic({ voterEmail, candidateId, voterName }) {
+async function castVoteAtomic({ voterEmail, candidateId, voterName, devMultiVote = false }) {
   const normalizedEmail = voterEmail.toLowerCase().trim();
   const firestoreReady = await checkFirestoreAvailable();
+
+  // Em desenvolvimento com devMultiVote ativo, gera um ID único para permitir acumular múltiplos votos
+  const isDevMode = process.env.NODE_ENV !== 'production';
+  const voteDocId = (isDevMode && devMultiVote)
+    ? `${normalizedEmail}__dev__${Date.now()}__${Math.random().toString(36).substring(2, 7)}`
+    : normalizedEmail;
 
   if (firestoreReady) {
     const db = getFirestore();
@@ -240,10 +246,10 @@ async function castVoteAtomic({ voterEmail, candidateId, voterName }) {
         throw err;
       }
 
-      const voteRef = db.collection('votes').doc(normalizedEmail);
+      const voteRef = db.collection('votes').doc(voteDocId);
       const existingVoteDoc = await transaction.get(voteRef);
 
-      if (existingVoteDoc.exists && !config.allowVoteChange) {
+      if (existingVoteDoc.exists && !config.allowVoteChange && !devMultiVote) {
         const err = new Error('Você já votou e a alteração de voto não está habilitada.');
         err.statusCode = 400;
         throw err;
@@ -259,7 +265,7 @@ async function castVoteAtomic({ voterEmail, candidateId, voterName }) {
       transaction.set(voteRef, voteRecord);
 
       return {
-        isUpdate: existingVoteDoc.exists
+        isUpdate: !devMultiVote && existingVoteDoc.exists
       };
     });
   }
@@ -276,21 +282,21 @@ async function castVoteAtomic({ voterEmail, candidateId, voterName }) {
   }
 
   memoryStore.votes = memoryStore.votes || {};
-  const existingVote = memoryStore.votes[normalizedEmail];
-  if (existingVote && !config.allowVoteChange) {
+  const existingVote = memoryStore.votes[voteDocId];
+  if (existingVote && !config.allowVoteChange && !devMultiVote) {
     const err = new Error('Você já votou e a alteração de voto não está habilitada.');
     err.statusCode = 400;
     throw err;
   }
 
-  memoryStore.votes[normalizedEmail] = {
+  memoryStore.votes[voteDocId] = {
     candidateId,
     voterEmail: normalizedEmail,
     voterName: voterName || normalizedEmail.split('@')[0],
     timestamp: new Date().toISOString()
   };
 
-  return { isUpdate: Boolean(existingVote) };
+  return { isUpdate: !devMultiVote && Boolean(existingVote) };
 }
 
 async function resetVotes() {
