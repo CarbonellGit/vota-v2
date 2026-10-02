@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-carbonell-blue: #2b3a6c;
+  --color-carbonell-navy: #1e2a4d;
+  --color-carbonell-yellow: #f7b53b;
+  --color-carbonell-red: #d82a2b;
+  --color-carbonell-white: #ffffff;
+  --color-carbonell-bg: #f8fafc;
+  --color-carbonell-secondary: #4b5563;
+  --color-carbonell-border: #e5e7eb;
+}
+
+@layer base {
+  html, body {
+    @apply bg-carbonell-bg text-carbonell-navy min-h-screen antialiased selection:bg-carbonell-yellow selection:text-carbonell-navy overflow-x-hidden;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+/* Custom festive glow and animations */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(247, 181, 59, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(247, 181, 59, 0.8);
+  }
+}
+
+.glow-gold {
+  animation: pulse-gold 2.5s infinite;
+}

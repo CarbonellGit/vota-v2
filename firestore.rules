@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Bloqueia 100% de leitura e gravação direta de clientes externos.
+    // Todas as operações devem passar exclusivamente pela API autenticada no Cloud Run (Admin SDK).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CarbonellDesignTokens",
+  "description": "Contrato formal de tokens e componentes visuais do Sistema de Votação Colégio Carbonell",
+  "tokens": {
+    "colors": {
+      "carbonell-blue": "#2b3a6c",
+      "carbonell-navy": "#1e2a4d",
+      "carbonell-yellow": "#f7b53b",
+      "carbonell-red": "#d82a2b",
+      "carbonell-white": "#ffffff",
+      "carbonell-bg": "#f8fafc",
+      "carbonell-secondary": "#4b5563",
+      "carbonell-border": "#e5e7eb"
+    },
+    "typography": {
+      "fontFamily": "Inter, system-ui, -apple-system, sans-serif"
+    },
+    "components": {
+      "navbar": {
+        "backgroundColor": "rgba(255, 255, 255, 0.95)",
+        "borderColor": "#e5e7eb",
+        "logoAsset": "/images/logo-fundo-branco.png",
+        "maxHeight": "40px"
+      },
+      "candidateCard": {
+        "backgroundColor": "#ffffff",
+        "borderRadius": "1rem",
+        "borderNormal": "1px solid #e5e7eb",
+        "borderVoted": "2px solid #f7b53b",
+        "primaryButtonBg": "#2b3a6c",
+        "primaryButtonText": "#ffffff"
+      },
+      "voteModal": {
+        "overlayBg": "rgba(15, 23, 42, 0.6)",
+        "cardBg": "#ffffff",
+        "confirmBtnBg": "#2b3a6c",
+        "cancelBtnBorder": "#e5e7eb"
+      },
+      "revealStage": {
+        "background": "linear-gradient(180deg, #0f172a 0%, #1e2a4d 50%, #0f172a 100%)",
+        "logoAsset": "/images/logo-fundo-azul.png",
+        "trophyColor": "#f7b53b",
+        "confettiEnabled": true
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "vota-v2",
+  "version": "1.0.0",
+  "description": "Sistema de Votação da Melhor Fantasia - Colégio Carbonell (v2)",
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,magenta\" \"npm --prefix server run start\" \"npm --prefix client run dev\"",
+    "start": "node server/index.js",
+    "build": "npm --prefix client run build",
+    "deploy": "npm run deploy:server && npm run deploy:client",
+    "deploy:server": "gcloud run deploy votacao-backend --source ./server --region southamerica-east1 --project vota-v2 --platform managed --allow-unauthenticated --min-instances 1 --max-instances 10 --memory 512Mi --env-vars-file ./server/env.yaml --quiet",
+    "deploy:client": "npm run build && firebase deploy --only hosting --project vota-v2"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
